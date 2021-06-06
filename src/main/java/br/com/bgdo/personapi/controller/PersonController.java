@@ -1,5 +1,7 @@
 package br.com.bgdo.personapi.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,8 @@ import br.com.bgdo.personapi.dto.request.PersonDTO;
 import br.com.bgdo.personapi.dto.response.MessageResponseDTO;
 import br.com.bgdo.personapi.service.PersonService;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @AllArgsConstructor
 @RestController
@@ -23,13 +27,15 @@ public class PersonController {
   private final PersonService personService;
 
   @GetMapping
-  public String getBookString() {
-    return "API Test!";
+  public List<PersonDTO> getPersons() {
+      return personService.listAll();
   }
-
+  
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public MessageResponseDTO createPerson(@RequestBody @Valid PersonDTO person) {
     return personService.createPerson(person);
   }
+
+  
 }
