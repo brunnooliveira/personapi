@@ -1,7 +1,6 @@
 package br.com.bgdo.personapi.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -22,15 +21,12 @@ public class PersonService {
 
   public MessageResponseDTO createPerson(PersonDTO person) {
     Person savedPerson = personRepository.save(PersonMapper.INSTANCE.toModel(person));
-    return MessageResponseDTO.builder().message("Created person with ID: " + savedPerson.getId()).build();
+    return createMessageResponse(savedPerson, "Created person with ID: ");
   }
 
   public List<PersonDTO> listAll() {
     List<Person> allPeople = personRepository.findAll();
-
-    return allPeople.stream()
-            .map(dto -> PersonMapper.INSTANCE.toDTO(dto))
-            .collect(Collectors.toList());
+    return allPeople.stream().map(dto -> PersonMapper.INSTANCE.toDTO(dto)).collect(Collectors.toList());
   }
 
   public PersonDTO findById(Long id) throws PersonNotFoundException {
@@ -43,8 +39,17 @@ public class PersonService {
     personRepository.deleteById(id);
   }
 
+  public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException {
+    verifyIfExists(id);
+    Person updatedPerson = personRepository.save(PersonMapper.INSTANCE.toModel(personDTO));
+    return createMessageResponse(updatedPerson, "Updated person with ID: ");
+  }
+ 
   private Person verifyIfExists(Long id) throws PersonNotFoundException {
     return personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
   }
 
+  private MessageResponseDTO createMessageResponse(Person person, String message) {
+    return MessageResponseDTO.builder().message(message + person.getId()).build();
+  }
 }
