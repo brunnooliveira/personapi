@@ -1,6 +1,7 @@
 package br.com.bgdo.personapi.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import br.com.bgdo.personapi.dto.request.PersonDTO;
 import br.com.bgdo.personapi.dto.response.MessageResponseDTO;
 import br.com.bgdo.personapi.entity.Person;
+import br.com.bgdo.personapi.exception.PersonNotFoundException;
 import br.com.bgdo.personapi.mapper.PersonMapper;
 import br.com.bgdo.personapi.repository.PersonRepository;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,11 @@ public class PersonService {
     return allPeople.stream()
             .map(dto -> PersonMapper.INSTANCE.toDTO(dto))
             .collect(Collectors.toList());
+  }
+
+  public PersonDTO findById(Long id) throws PersonNotFoundException {
+    Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
+    return PersonMapper.INSTANCE.toDTO(person);
   }
 
 }
