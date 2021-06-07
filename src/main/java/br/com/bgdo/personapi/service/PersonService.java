@@ -18,20 +18,21 @@ import lombok.AllArgsConstructor;
 public class PersonService {
 
   private final PersonRepository personRepository;
+  private final PersonMapper personMapper;
 
   public MessageResponseDTO createPerson(PersonDTO person) {
-    Person savedPerson = personRepository.save(PersonMapper.INSTANCE.toModel(person));
-    return createMessageResponse(savedPerson, "Created person with ID: ");
+    Person savedPerson = personRepository.save(personMapper.toModel(person));
+    return createMessageResponse(savedPerson, "Person successfully created with ID ");
   }
 
   public List<PersonDTO> listAll() {
     List<Person> allPeople = personRepository.findAll();
-    return allPeople.stream().map(dto -> PersonMapper.INSTANCE.toDTO(dto)).collect(Collectors.toList());
+    return allPeople.stream().map(dto -> personMapper.toDTO(dto)).collect(Collectors.toList());
   }
 
   public PersonDTO findById(Long id) throws PersonNotFoundException {
     Person person = verifyIfExists(id);
-    return PersonMapper.INSTANCE.toDTO(person);
+    return personMapper.toDTO(person);
   }
 
   public void delete(Long id) throws PersonNotFoundException {
@@ -41,8 +42,8 @@ public class PersonService {
 
   public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException {
     verifyIfExists(id);
-    Person updatedPerson = personRepository.save(PersonMapper.INSTANCE.toModel(personDTO));
-    return createMessageResponse(updatedPerson, "Updated person with ID: ");
+    Person updatedPerson = personRepository.save(personMapper.toModel(personDTO));
+    return createMessageResponse(updatedPerson, "Person successfully updated with ID ");
   }
  
   private Person verifyIfExists(Long id) throws PersonNotFoundException {
